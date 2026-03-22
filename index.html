@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Urgent Verification</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background: #121212; /* Dark background for the scare */
+            font-family: -apple-system, system-ui, sans-serif;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 85%;
+            max-width: 350px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        h1 { font-size: 1.4rem; color: #333; margin-bottom: 25px; line-height: 1.4; }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            height: 50px;
+            position: relative;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        #yesBtn { background: #4CAF50; color: white; }
+        #noBtn { background: #f44336; color: white; position: relative; z-index: 100; }
+
+        /* Jump Scare */
+        #scareOverlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black url('https://rimmer.github.io/jquery-jumpscare/face.jpg') no-repeat center;
+            background-size: cover;
+            display: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic"><source src="music.mp3" type="audio/mpeg"></audio>
+    <audio id="scream"><source src="scare.mp3" type="audio/mpeg"></audio>
+
+    <div id="scareOverlay"></div>
+
+    <div class="card" id="mainCard">
+        <h1 id="msg">Is your name 48 teeth Teethklonjay?</h1>
+        <div class="btn-container">
+            <button class="btn" id="yesBtn" onclick="doYes()">Yes</button>
+            <button class="btn" id="noBtn" onmouseenter="dodge()" ontouchstart="dodge(event)">No</button>
+        </div>
+    </div>
+
+    <script>
+        let moveCount = 0;
+
+        function dodge(e) {
+            if (e) e.preventDefault(); // Prevents "ghost clicks" on mobile
+            
+            moveCount++;
+
+            // Trigger Jump Scare on 6th attempt
+            if (moveCount > 5) {
+                const scream = document.getElementById('scream');
+                const overlay = document.getElementById('scareOverlay');
+                overlay.style.display = 'block';
+                scream.play();
+                
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    moveCount = 0;
+                }, 1500);
+                return;
+            }
+
+            const btn = document.getElementById('noBtn');
+            btn.style.position = 'fixed';
+
+            // Stay within safe bounds (10% to 80% of screen)
+            const newX = Math.random() * (window.innerWidth - btn.offsetWidth - 40) + 20;
+            const newY = Math.random() * (window.innerHeight - btn.offsetHeight - 40) + 20;
+
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+        }
+
+        function doYes() {
+            document.getElementById('msg').innerHTML = "I KNEW IT! 😂🦷<br><span style='font-size: 0.9rem;'>You're stuck with me!</span>";
+            document.getElementById('noBtn').style.display = 'none';
+            document.getElementById('yesBtn').style.display = 'none';
+            document.getElementById('bgMusic').play();
+        }
+    </script>
+</body>
+</html>
